@@ -1,0 +1,207 @@
+<div id="privateStoreForms" style="display:none">
+    <!doctype html>
+    <!--[if IE 9]> <html class="ie9 supports-no-js" lang="{{ shop.locale }}"> <![endif]-->
+    <!--[if (gt IE 9)|!(IE)]><!--> <html class="supports-no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="theme-color" content="{{ settings.color_primary }}">
+        <link rel="canonical" href="{{ canonical_url }}">
+        {% if settings.favicon %}
+            <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />
+        {% endif %}
+        <title>
+          {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+        </title>
+        {% if page_description %}
+            {%- comment %}<locksmith:562e>{% endcomment -%}
+              {%- include 'locksmith-variables', locksmith_hiding_scope: 'resource' %}{% if locksmith_transparent %}<meta name="description" content="{{ page_description | escape }}">{% endif -%}
+              {%- comment %}original: <meta name="description" content="{{ page_description | escape }}">{%- endcomment %}
+            {%- comment %}</locksmith:562e>{% endcomment -%}
+        {% endif %}
+        {{ 'private-store.css' | asset_url | stylesheet_tag }}
+        {{ 'private-store-jq.js' | asset_url | script_tag }}
+        {{ 'private-store.js' | asset_url | script_tag }}
+        {% include 'private-store-config' %}
+    </head>
+
+    <body>
+        <div class="bodyWrapper">
+            {% if request.path contains 'account/login' %}
+                <div class="loginFormWrapper">
+                    <h2 class="loginTitle formTitle">{{ 'customer.login.title' | t }}</h2>
+                    <p class="loginDesc formDesc"></p>
+                    <div class="formWrapper">
+                        {% form 'customer_login' %}
+
+                            <div>
+                                <label class="loginInputLabel inputLabel">{{ 'customer.login.email' | t }}</label>
+                                <input class="loginInput inputClass" type="email" data-source-var="emailLabel" name="customer[email]" placeholder="{{ 'customer.login.email' | t }}" />
+                            </div>
+
+                            <div>
+                                <label class="loginInputLabel inputLabel" for="CreatePassword">{{ 'customer.login.password' | t }}</label>
+                                <input class="loginInput inputClass" type="password" data-source-var="passwordLabel" name="customer[password]" placeholder="{{ 'customer.login.password' | t }}" />
+                            </div>
+
+                            <div>
+                                <input class="loginSubmitButton submitButton" type="submit" value="{{ 'customer.login.sign_in' | t }}" />
+                            </div>
+                            <div>
+                                <div class="formInfoMessage">{% if form.posted_successfully? %}<div class="success">{{ 'customer.recover_password.success' | t }}</div>{% else %}{{ form.errors | default_errors }}{% endif %}</div>
+                            </div>
+
+                        {% endform %}
+                    </div>
+                    <a href="/account/register" class="loginRegistrationLink formLink">{{ 'customer.register.title' | t }}</a>
+                    <a href="#recover" class="loginForgotPasswordLink formLink">{{ 'customer.login.forgot_password' | t }}</a>
+                </div>
+                <div class="forgotPasswordFormWrapper">
+                    <h2 class="forgotPasswordTitle formTitle">{{ 'customer.recover_password.title' | t }}</h2>
+                    <p class="forgotPasswordDesc formDesc">{{ 'customer.recover_password.subtext' | t }}</p>
+                    <div class="formWrapper">
+                        {% form 'recover_customer_password' %}
+
+                            <div>
+                                <label class="forgotPasswordInputLabel inputLabel" for="Email">{{ 'customer.recover_password.email' | t }}</label>
+                                <input class="forgotPasswordInput inputClass" data-source-var="passwordLabel" type="email" name="email" placeholder="{{ 'customer.recover_password.email' | t }}" />
+                            </div>
+                            <div>
+                                <input class="forgotSubmitButton submitButton" type="submit" value="{{ 'customer.recover_password.submit' | t }}" />
+                            </div>
+                            <div>
+                                <div class="formInfoMessage">{% if form.posted_successfully? %}<div class="success">{{ 'customer.recover_password.success' | t }}</div>{% else %}{{ form.errors | default_errors }}{% endif %}</div>
+                            </div>
+
+                        {% endform %}
+                    </div>
+                    <a href="javascript:void(0)" class="backToLoginForm formLink">{{ 'customer.recover_password.cancel' | t }}</a>
+                </div>
+            {% elsif request.path contains 'account/register' %}
+                <div class="registrationFormWrapper">
+                    <h2 class="registrationTitle formTitle">{{ 'customer.register.title' | t }}</h2>
+                    <div class="formWrapper">
+                        {% form 'create_customer' %}
+
+                            <div>
+                                <label for="first_name" class="loginInputLabel inputLabel">{{ 'customer.register.first_name' | t }}</label>
+                                <input class="loginInput inputClass" type="text" data-source-var="firstNameLabel" name="customer[first_name]" placeholder="{{ 'customer.register.first_name' | t }}" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} />
+                            </div>
+                            <div>
+                                <label for="last_name" class="loginInputLabel inputLabel">{{ 'customer.register.last_name' | t }}</label>
+                                <input class="loginInput inputClass" type="text" data-source-var="lastNameLabel" name="customer[last_name]" placeholder="{{ 'customer.register.last_name' | t }}" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} />
+                            </div>
+                            <div>
+                                <label for="email" class="loginInputLabel inputLabel">{{ 'customer.register.email' | t }}</label>
+                                <input class="loginInput inputClass" type="email" data-source-var="emailLabel" name="customer[email]" placeholder="{{ 'customer.register.email' | t }}" {% if form.email %} value="{{ form.email }}"{% endif %} />
+                            </div>
+                            <div>
+                                <label class="loginInputLabel inputLabel" for="password">{{ 'customer.register.password' | t }}</label>
+                                <input class="loginInput inputClass" type="password" data-source-var="passwordLabel" name="customer[password]" placeholder="{{ 'customer.register.password' | t }}" />
+                            </div>
+                            <div>
+                                <input class="loginSubmitButton submitButton" type="submit" value="{{ 'customer.register.submit' | t }}" />
+                            </div>
+                            <div>
+                                <div class="formInfoMessage">{{ form.errors | default_errors }}</div>
+                            </div>
+
+                        {% endform %}
+                    </div>
+                    <a href="/account/login" class="linkToLogin formLink">{{ 'customer.login.title' | t }}</a>
+                </div>
+            {% elsif request.path contains 'account/reset' %}
+                <div class="resetPasswordFormWrapper">
+                    <h2 class="resetPasswordTitle formTitle">{{ 'customer.reset_password.title' | t }}</h2>
+                    <p class="resetPasswordDesc formDesc">{{ 'customer.reset_password.subtext' | t: email: email }}</p>
+                    <div class="formWrapper">
+                        {% form 'reset_customer_password' %}
+
+                            <div>
+                                <label class="loginInputLabel inputLabel" for="password">{{ 'customer.reset_password.password' | t }}</label>
+                                <input class="loginInput inputClass" type="password" data-source-var="passwordLabel" name="customer[password]" placeholder="{{ 'customer.reset_password.password' | t }}" />
+                            </div>
+                            <div>
+                                <label class="loginInputLabel inputLabel" for="password_confirmation">{{ 'customer.reset_password.password_confirm' | t }}</label>
+                                <input class="loginInput inputClass" type="password" data-source-var="resetPasswordConfirmPassLabel" name="customer[password_confirmation]" placeholder="{{ 'customer.reset_password.password_confirm' | t }}" />
+                            </div>
+                            <div>
+                                <input class="loginSubmitButton submitButton" type="submit" value="{{ 'customer.reset_password.submit' | t }}" />
+                            </div>
+                            <div>
+                                <div class="formInfoMessage">{{ form.errors | default_errors }}</div>
+                            </div>
+
+                        {% endform %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="bodyWrapperOverlay">
+                <svg class="lds-spinner" width="200px"  height="200px"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;">
+                    <g transform="rotate(0 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(30 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(60 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(90 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(120 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(150 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(180 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(210 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(240 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(270 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(300 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                    <g transform="rotate(330 50 50)">
+                        <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#28292f">
+                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
+                        </rect>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </body>
+    </html>
+</div>

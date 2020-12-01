@@ -1,0 +1,11 @@
+{% if customer %}
+	
+	{% include 'breadcrumbs' %}
+	{% section 'module-product' %}
+	{% section 'static-product-recommendations' %}
+
+{% else %}
+
+	{% include 'please-login' %}
+
+{% endif %}

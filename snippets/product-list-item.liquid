@@ -1,0 +1,216 @@
+{% assign show_product = false %}
+
+
+{% for tag in customer.tags %}
+
+	{% if tag contains 'custtag_' %}
+
+   			{% assign customer_tag_isolated = tag | remove: "custtag_" %}
+			
+			{% break %}
+
+	{% endif %}
+
+
+{% endfor %}
+
+
+{% assign productTags = product.tags | join:',' %}
+
+{% if productTags contains 'prodtag_' %}
+
+	{% for tag in product.tags %}
+
+		{% if tag contains 'prodtag_' %}
+
+			
+				{% assign product_tag_isolated = tag | remove: "prodtag_" %}
+
+			
+				{% if customer_tag_isolated == product_tag_isolated %}
+
+   					{% assign show_product = true %}
+					{% break %}
+
+				{% else %}
+
+					{% assign show_product = false %}
+
+				{% endif %}
+
+		{% endif %}
+
+	{% endfor %}
+{% endif %}
+
+
+
+{% assign apo = false %}
+
+{% for tag in product.tags %}
+
+	{% if tag contains 'APO' %}
+
+   			{% assign apo = true %}
+
+	{% endif %}
+
+
+{% endfor %}
+
+
+
+
+{% assign item = product %}
+{% if template contains 'search' %}
+  {% assign item = item %}
+{% elsif template contains 'product' %}
+  {% assign item = prod %}
+{% endif %}
+
+{% if settings.product_stock_overlay and item.available %}
+  {% assign show_stock_indicator = false %}
+  {% assign total = 0 %}
+  {% assign threshold = settings.product_stock_overlay_show | times: 1 %}
+  {% for variant in item.variants %}
+{%- include 'bold-variant' with variant, hide_action: 'skip' -%}
+    {% if variant.inventory_management == "shopify" and variant.inventory_quantity > 0 and varient.inventory_policy != 'continue'%}
+      {% assign total = total | plus: variant.inventory_quantity %}
+      {% assign show_stock_indicator = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+
+{% if show_product %}
+
+<article class="product-list-item" {% unless onboarding %}id="product-list-item-{{ item.id }}"{% endunless %}>
+
+  <figure class="product-list-item-thumbnail">
+    {% unless onboarding %}
+      <a href="{{ item.url | within: collection }}">
+        {% assign lazy = false %}
+        {% if item.featured_image %}
+          {% assign lazy = true %}
+        {% endif %}
+        
+        
+        
+        
+ 
+{% if apo == true %}       
+ 
+        
+    {% if item.images.size > 1 %}
+
+    {% assign featured_image = product.images[1] %}
+
+    {% endif %}
+
+
+
+    {% if item.images.size == 1 %}
+
+    {% assign featured_image = product.featured_image %}
+
+    {% endif %}
+
+
+{% else %}
+        
+    {% assign featured_image = product.featured_image %} 
+        
+{% endif %}
+        
+ 
+        
+         
+        
+        {%
+          include 'rimg',
+          img: featured_image,
+          class: 'product-list-item-image',
+          size: '600x600',
+          lazy: lazy
+        %}
+
+        {% if show_stock_indicator and total < threshold %}
+          <span class="stock-overlay meta">{{ 'products.product.stock_level' | t: stock_count: total }}</span>
+        {% endif %}
+
+        {% if bold_compare_at_price_min > bold_price_min and item.available %}
+          <span class="sale-badge">&#57367;</span>
+        {% endif %}
+      </a>
+    {% else %}
+      <a href="#">
+        {{ onboarding_image }}
+      </a>
+    {% endunless %}
+  </figure>
+
+  <div class="product-list-item-details">
+    {% if settings.product_show_vendor %}
+      <p class="product-list-item-vendor vendor meta">
+        {% unless onboarding %}
+          {{ item.vendor }}
+        {% else %}
+          {{ onboarding_vendor }}
+        {% endunless %}
+      </p>
+    {% endif %}
+
+    <h1 class="product-list-item-title">
+      <a href="{% unless onboarding %}{{ item.url | within: collection }}{% endunless %}">
+        {% unless onboarding %}
+          {{ item.title }}
+        {% else %}
+          {{ onboarding_title }}
+        {% endunless %}
+      </a>
+    </h1>
+
+      <!-- Bold: Memberships (price) -->
+{% include 'bold-memberships-price' %}
+{% if bold_hide_item == false %}
+<p class="product-list-item-price">
+        {% if onboarding %}
+          {{ onboarding_price | money }}
+        {% elsif item.available %}
+          {% if bold_price_varies %}
+            <span class="price">
+              {% if bold_price_varies %}{{ 'products.product.from' | t }}{% endif %}
+              <span class="money">{{ bold_price_min | money }}</span></span>
+          {% else %}
+            <span class="price">
+              <span class="money">{{ bold_price_min | money }}</span>
+              {% unless bold_compare_at_price_min <= bold_price_min %}
+                <span class="original money">
+                  {% if bold_compare_at_price_min > bold_price_min %}
+                    {{ bold_compare_at_price_min | money }}
+                  {% endif %}
+                </span>
+              {% endunless %}
+            </span>
+          {% endif %}
+        {% else %}
+          {{ 'products.product.sold_out' | t }}
+        {% endif %}
+      </p>
+{% endif %}
+<!-- end Bold code -->
+
+  </div>
+
+</article>
+
+
+{% else %}
+ <figure class="product-list-item-thumbnail">
+    
+   <p class="empty">Not available for this customer with tag: "{{ customer_tag_isolated }}", while this product should have: "{{ product_tag_isolated }}" tag </p>
+
+
+
+  </figure>
+{% endif %}

@@ -1,0 +1,11 @@
+{% if customer %}
+
+    {% section 'home-slideshow' %}
+
+    {{ content_for_index }}
+
+{% else %}
+
+	{% include 'please-login' %}
+
+{% endif %}

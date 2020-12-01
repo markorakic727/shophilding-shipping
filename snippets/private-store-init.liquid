@@ -1,0 +1,60 @@
+<script type="text/javascript">
+  	var customerApproved = false;
+  	var isLoggedCustomerOrEmail = false;
+</script>
+
+{% assign customerApproved = false %}
+{% assign isExceptionPage = false %}
+{% assign allowToShowPage = false %}
+{% assign customerStatus = -1 %}
+{% assign storeApprovedType = -1 %}
+
+{% if shop.metafields.private_store.approved_type %}
+	{% assign storeApprovedType = shop.metafields.private_store.approved_type %}
+{% endif %}
+
+{% if customer %}
+	<script type="text/javascript">
+  		var isLoggedCustomerOrEmail = '{{ customer.email }}';
+	</script>
+	{% assign customerID = customer.id | downcase %}
+	{% for i in (0..shop.metafields.private_store.groups_count) %}
+		{% assign customersKey = 'customers' | append: i %}
+		{% if shop.metafields.private_store[customersKey][customerID] %}
+			{% assign customerStatus = shop.metafields.private_store[customersKey][customerID] %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+{% if storeApprovedType == -1 or storeApprovedType == 0 %}
+	{% assign customerApproved = true %}
+{% elsif storeApprovedType == 1 and customer %}
+	{% assign customerApproved = true %}
+{% elsif storeApprovedType == 2 and customerStatus == 1 %}
+	{% assign customerApproved = true %}
+{% endif %}
+
+{% if customerApproved %}
+	<script type="text/javascript">
+      var customerApproved = true;
+  	</script>
+{% endif %}
+
+{% for noLockPage in shop.metafields.private_store.no_lock_pages %}
+	{% assign noLockPageCorrection = noLockPage | prepend: '/' %}
+	{% if noLockPage == request.path or noLockPageCorrection == request.path %}
+		{% assign isExceptionPage = true %}
+	{% endif %}
+{% endfor %}
+
+{% if request.path contains 'challenge' %}
+	{% assign isExceptionPage = true %}
+{% endif %}
+
+{% if request.path contains 'account/login' or request.path contains 'account/register' or request.path contains 'account/reset' %}
+	{% include 'private-store-forms' %}
+{% else %}
+	{% if customerApproved or isExceptionPage or shop.customer_accounts_enabled == false %}
+		{% assign allowToShowPage = true %}
+	{% endif %}
+{% endif %}

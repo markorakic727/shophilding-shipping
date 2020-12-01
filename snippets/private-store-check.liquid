@@ -1,0 +1,105 @@
+{% if allowToShowPage == false %}
+	<script type="text/javascript">
+      	intervalId = null;
+        varCounter = 0;
+        containScriptTagFirstControll = false;
+        containScriptTagSecondControll = false;
+        window.onload = function() {
+            scripts = document.getElementsByTagName("script");
+            for (var i = 0; i < scripts.length; i++) {
+                if (scripts[i].src.includes('privateStoreScriptTag')) {
+                    containScriptTagFirstControll = true;
+                }
+            }
+            if (!containScriptTagFirstControll) {
+                intervalId = setInterval(function() {
+                    if (varCounter < 5) {
+                        varCounter++;
+                        scripts = document.getElementsByTagName("script");
+                        for (var i = 0; i < scripts.length; i++) {
+                            if (scripts[i].src.includes('privateStoreScriptTag')) {
+                                containScriptTagSecondControll = true;
+                            }
+                        }
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 50);
+                if (containScriptTagSecondControll) {
+                  	if (window.location.pathname.indexOf('account/login') == -1 && window.location.pathname.indexOf('account/register') == -1 && window.location.pathname.indexOf('account/reset') == -1) {
+                     	window.location.href = "/account/login";
+                    } else {
+                      	item = document.getElementById("privateStoreOriginalHtmlWrapper");
+						item.parentNode.removeChild(item);
+                    	document.getElementById("privateStoreForms").style.display = "block";
+                      	if (typeof backgroundColorOfPage !== 'undefined') {
+                            document.body.style.backgroundColor = backgroundColorOfPage;
+                        }
+                    }
+                } else {
+                  	//neobsahuje scripttag - iba tu
+                    document.getElementById("privateStoreOriginalHtmlWrapper").style.display = "block";
+                  	item = document.getElementById("privateStoreForms");
+                  	item.parentNode.removeChild(item);
+                }
+            } else {
+                if (window.location.pathname.indexOf('account/login') == -1 && window.location.pathname.indexOf('account/register') == -1 && window.location.pathname.indexOf('account/reset') == -1) {
+                  	window.location.href = "/account/login";
+                } else {
+                  	item = document.getElementById("privateStoreOriginalHtmlWrapper");
+                  	item.parentNode.removeChild(item);
+                  	document.getElementById("privateStoreForms").style.display = "block";
+                  	if (typeof backgroundColorOfPage !== 'undefined') {
+                      	document.body.style.backgroundColor = backgroundColorOfPage;
+                  	}
+                }
+            }
+        }
+  	</script>
+{% else %}
+	<script type="text/javascript">
+        intervalId = null;
+        varCounter = 0;
+        containScriptTagFirstControll = false;
+        containScriptTagSecondControll = false;
+        window.onload = function() {
+            scripts = document.getElementsByTagName("script");
+            for (var i = 0; i < scripts.length; i++) {
+                if (scripts[i].src.includes('privateStoreScriptTag')) {
+                    containScriptTagFirstControll = true;
+                }
+            }
+            if (!containScriptTagFirstControll) {
+                intervalId = setInterval(function() {
+                    if (varCounter < 5) {
+                        varCounter++;
+                        scripts = document.getElementsByTagName("script");
+                        for (var i = 0; i < scripts.length; i++) {
+                            if (scripts[i].src.includes('privateStoreScriptTag')) {
+                                containScriptTagSecondControll = true;
+                            }
+                        }
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 50);
+                if (containScriptTagSecondControll) {
+                    document.getElementById("privateStoreOriginalHtmlWrapper").style.display = "block";
+                  	if (typeof backgroundColorOfPage !== 'undefined') {
+                      	document.body.style.backgroundColor = backgroundColorOfPage;
+                    }
+                } else {
+                  	//neobsahuje scripttag - iba tu
+                    document.getElementById("privateStoreOriginalHtmlWrapper").style.display = "block";
+                    item = document.getElementById("privateStoreForms");
+                  	item.parentNode.removeChild(item);
+                }
+            } else {
+                document.getElementById("privateStoreOriginalHtmlWrapper").style.display = "block";
+              	if (typeof backgroundColorOfPage !== 'undefined') {
+                  	document.body.style.backgroundColor = backgroundColorOfPage;
+                }
+            }
+		}
+	</script>
+{% endif %}
