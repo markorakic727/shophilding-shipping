@@ -21,11 +21,18 @@
     data-cart
   >
     <div class="mw-spinner" style="width:100%;height:100%;position: fixed;display:block;top: 0;left: 0; right: 0; bottom: 0; background: white url(//apps.mageworx.com/img/spinner-new.gif) no-repeat center;z-index:99999;opacity:0.5;"></div>
+    {% for tag in customer.tags %}
+      {% if tag == 'custtag_nordicdream' %}
+        {% assign has_tag = true %}
+      {% endif %}
+    {% endfor %}
     <script>
+      let time = 3000
+      {% if has_tag %} time = 8000 {% endif %}
       setTimeout(function(){
       	$(".mw-spinner").remove();
-      },3000)
-      </script>
+      },time)
+    </script>
     
     <div class="cart-header">
       <span class="cart-header-product">{{ 'cart.header.product' | t }}</span>
